@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
-import CartStore from "./CartStore";
+import {useCart} from './SwrHelper';
 
 export default function Header() {
 
-    const [itemCount, setItemCount] = useState(0);
-
-    useEffect(() => {
-        CartStore.subscribe(() => {
-            const state = CartStore.getState();
-            if (state) {
-                    const itemCount = state.cart.map((item) => item.quantity).reduce((p, n) => p + n, 0);
-                    setItemCount(itemCount);
-            }
-        });
-    }, []);
+    const {cart, isLoading} = useCart();
 
     return (
         <nav className="navbar navbar-expand navbar-dark fixed-top bg-dark">
@@ -32,7 +22,9 @@ export default function Header() {
                         <NavLink exact to="/cart" className="nav-link">
                             <span className="bi bi-cart-plus-fill text-white font-xxlarge"></span>
                             <span className="font-upper font-bold text-white ms-4">
-                                <span className="font-xxlarge align-middle">{itemCount}</span>
+                                <span className="font-xxlarge align-middle">{ (!isLoading && cart) ? 
+                                    cart.map(item => item.quantity).reduce((p, n) => p + n, 0) : 0}
+                                </span>
                                 <span className="align-middle ms-2">Tickets</span>
                             </span>
                         </NavLink>

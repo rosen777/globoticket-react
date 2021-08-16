@@ -1,7 +1,6 @@
 import React from "react";
 import useSWR from 'swr';
 import Eventitem from "./Eventitem";
-import { getEvents } from "./EventHelper";
 import {fetcher} from './SwrHelper';
 
 export default function Eventlist() {

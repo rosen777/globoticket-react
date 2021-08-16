@@ -1,39 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import {useDispatch} from 'react-redux';
-import CartStore from "./CartStore";
 import {clearCart} from './CartHelper';
 import Shoppingcartitem from "./Shoppingcartitem";
+import { useCart } from './SwrHelper';
 
 export default function Shoppingcart() {
     const history = useHistory();
-    const dispatch = useDispatch();
-
-
-    const [cart, setCart] = useState([]);
-    const [totalAmount, setTotalAmount] = useState(0);
-
-    let updateCart = () => {
-        const state = CartStore.getState();
-        if (state) {
-                const cart = state.cart;
-                const totalAmount = state.cart.reduce((p, n) => p + n.quantity * n.price, 0);
-                setCart(cart);
-                setTotalAmount(totalAmount);
-        }
-    };
+    const { cart, isLoading } = useCart();
 
     let handleOrderClick = () => {
-       dispatch(clearCart);
+       clearCart();
         history.push("/confirm");
     };
-
-    useEffect(() => {
-        updateCart();
-        CartStore.subscribe(() => {
-            updateCart();
-        });
-    }, []);
 
     return (
         <div className="container" id="carttable">
@@ -59,7 +37,10 @@ export default function Shoppingcart() {
                     <td colSpan="5" className="text-center">
                         <button type="button" id="btnOrder"
                             onClick={handleOrderClick}
-                            className="btn btn-primary btn-primary-themed btn-md font-upper">Order for ${ totalAmount }</button>
+                            className="btn btn-primary btn-primary-themed btn-md font-upper">Order for ${
+                                (!isLoading && cart) ? cart.reduce((p, n) => p + n.quantity * n.price, 0) : 0
+                            }
+                        </button>
                     </td>
                 </tr>
             </tfoot>
